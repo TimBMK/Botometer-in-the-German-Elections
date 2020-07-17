@@ -1,10 +1,14 @@
 ##### resume working #####
-data.folder <- "D:\\Stuff\\Uni\\MA Sozialwissenschaften Humboldt-Universität Berlin\\17 (SoSe)\\Web Data Collection\\Twitter Bots\\data"
+data.folder <- "----"
 setwd(data.folder)
-source("packages.r")
-source("functions.r")
+
 library(httr)
 library(scales)
+library(plyr)
+library(rtweet)
+library(stringr)
+library(ggplot2)
+
 load("rkeys.RDa") 
 load("twittertoken.RDa")
 load("BTW17_TwitterData.RDa")
@@ -20,9 +24,12 @@ load("BTW17_TwitterData_bots.RDa")
 
 ## peparations            -------------------
 
-source("packages.r")
-source("functions.r")
+library(plyr)
 library(httr)
+library(rtweet)
+library(stringr)
+library(ggplot2)
+
 
 TwitterTor_accesstoken <-  "----"
 TwitterTor_accesssecret <-  "----"
@@ -688,19 +695,6 @@ sum(TwitterData_bots$is_retweet[TwitterData_bots$bot == "unknown"])
 
 
 
-#### import results from Python Botometer package (not needed)####
-# List of users to be exported to Python as a .csv file:
-user.list.test <- users.test$screen_name
-write.table(users.test$screen_name, file = "users.test.csv", row.names = F, col.names = F)
-
-user.list <- users$screen_name
-write.table(users$screen_name, file = "users.csv", row.names = FALSE, col.names = FALSE)
-
-
-# Results from the Python Botometer package
-Botometer.results <- fromJSON("botometer-results.test.json", simplifyVector = FALSE) %>% ldply(data.frame)
-results <- Botometer.results[ , colSums(is.na(Botometer.results)) == 0]
-View(results)
 
 
 
