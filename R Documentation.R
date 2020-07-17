@@ -1,5 +1,5 @@
 ##### resume working #####
-data.folder <- "D:\\Stuff\\Uni\\MA Sozialwissenschaften Humboldt-Universität Berlin\\17 (SoSe)\\Web Data Collection\\Twitter Bots\\data"
+data.folder <- "D:\\Stuff\\Uni\\MA Sozialwissenschaften Humboldt-UniversitÃ¤t Berlin\\17 (SoSe)\\Web Data Collection\\Twitter Bots\\data"
 setwd(data.folder)
 source("packages.r")
 source("functions.r")
@@ -24,11 +24,11 @@ source("packages.r")
 source("functions.r")
 library(httr)
 
-TwitterTor_accesstoken <-  "881861582715850752-IP5Mzv5kbiD0HyivFGKh85gJMzfVwco"
-TwitterTor_accesssecret <-  "PBhUuri04d9c3QvuO3ID3UOJRC8DPNsbzDRGgbp3svqbE"
-TwitterToR_twitterkey <- "e7TlZjM6fpmLWlgxc6wBeyrYO"
-TwitterToR_twittersecret <- "oxnbth4ZSzR4UrfWevgdtLsZlBdqVpJqnAjfBKi0WTSZbos2uO"
-MashapeKey <- "w47kdFujXYmshjVF6zCGGMaf9vW8p1oGJs1jsnZYNe084jVhPj"
+TwitterTor_accesstoken <-  "----"
+TwitterTor_accesssecret <-  "----"
+TwitterToR_twitterkey <- "----"
+TwitterToR_twittersecret <- "---"
+MashapeKey <- "----"
 
 save(TwitterToR_twitterkey,
      TwitterToR_twittersecret,
@@ -39,9 +39,9 @@ save(TwitterToR_twitterkey,
 
 load("rkeys.RDa") 
 
-dir.create("D:\\Stuff\\Uni\\MA Sozialwissenschaften Humboldt-Universität Berlin\\17 (SoSe)\\Web Data Collection\\Twitter Bots\\data")
+dir.create("----")
 
-data.folder <- "D:\\Stuff\\Uni\\MA Sozialwissenschaften Humboldt-Universität Berlin\\17 (SoSe)\\Web Data Collection\\Twitter Bots\\data"
+data.folder <- "----"
 setwd(data.folder)
 
 
@@ -58,28 +58,49 @@ twitter_token <- create_token(
 
 save(twitter_token, file = "twittertoken.RDa")
 
-### Twitter Search      ----------------------------------
+### Twitter Data      ----------------------------------
 
-test <- search_tweets("#afd OR #TrauDichDeutschland", n = 18000, token = twitter_token)
-View(test)
-save(test, file = "testtweetsafd.rda")
-# Tweets am 2.8.17: 5684
-# Tweets am 1.8.17: 6511
+## Twitter Stream on the German Federal Elections in 2017
 
-test2 <- search_tweets("#spd", n = 18000, token = twitter_token)
-View(test2)
-save(test2, file = "testtweetsspd.rda")
-# nur 15,222 Tweets zwischen dem 25.7. und 3.8.17 im Gegensatz zu 17,436 zwischen 31.7. und 3.8.17 für #afd OR #TrauDichDeutschland -> deutlich höheres Tweetvolumen bei weniger followern lässt auf angeregtere Diskussion ODER Bots schließen
+# set up directory 
+stream.folder <- "Twitter Stream"
+dir.create(stream.folder)
+streamname <- "btw17"
 
-
-# Search API filtert Tweets nach "Relevanz" - unbekannter bias. Stream API evtl geeigneter, aber müsste konstant laufen (-> Ressourcen)
+# Hashtags
+q = paste0("#BTW, #BTW17,#Bundestagswahl, #Bundestagswahl2017, #SPD, #ZeitFuerMartin, #Schulz, #CDU, #Merkel, #CSU, #KlarfuerunserLand, #Gruene, #Gruenen, #DieGruenen, #DarumGruen, #AfD, #TrauDichDeutschland, #Weidel, #LINKE, #dieLinke, #Piraten, #FreuDichAufsNeuland, #FDP, #DenkenWirNeu, #Lindner, #NPD, #DiePARTEI")
+# Ã¼ = ue -> same result, avoids errors
 
 
+#### Stream Function ####
 
-afdtweets <- search_tweets("#afd OR #TrauDichDeutschland", n = 180000, token = twitter_token, retryonratelimit = TRUE) # funktioniert mit retryonratelimit und n>18.000?
-View(afdtweets)
-save(afdtweets, file = "afdtweets.rda")
+btw17_stream <- function(x){
+  filename <- file.path(stream.folder, paste0(streamname, "_", format(Sys.time(), "%F-%H-%M-%S"), ".json"))
+  stream_tweets(q =q, parse = FALSE,
+                timeout = x,
+                file_name = filename,
+                language = "de",
+                token = twitter_token)
+}                                           # x = time running in seconds
 
+
+# Teststream
+btw17_stream(30)
+# 24 hour Stream
+btw17_stream(86400)
+
+#### Stream ####
+# running on a dedicated Amazon Webservice Server for 27days, producing 27 24hour streams
+replicate(27, btw17_stream(86400))
+
+#### Search ####
+# setup for a backup twitter_search so that data can be reproduced when the stream fails (Twitter's Search API allows access to Tweets 6-10 days old, but might have a unchecked Bias)
+q2 = "#BTW OR #BTW17 OR #Bundestagswahl OR #Bundestagswahl2017 OR #SPD OR #ZeitFuerMartin OR #Schulz OR #CDU OR #Merkel OR #CSU OR #KlarfuerunserLand OR #Gruene OR #Gruenen OR #DieGruenen OR #DarumGruen OR #AfD OR #TrauDichDeutschland OR #Weidel OR #LINKE OR #dieLinke OR #Piraten OR #FreuDichAufsNeuland OR #FDP OR #DenkenWirNeu OR #Lindner OR #NPD"
+
+btw17_search <- search_tweets(q2, n = 17000, token = twitter_token, retryonratelimit = TRUE)
+
+search.folder <- "Twitter Search"
+dir.create(search.folder)
 
 
 
@@ -124,7 +145,7 @@ BotOmeteR <- function(screen_name) {
 
 
 
-#### Data: BTW17 Stream -final- -see btw17 file ---------
+#### Data: BTW17 Stream (see above) ---------
 load("BTW17_TwitterData.RDa")
 
 
