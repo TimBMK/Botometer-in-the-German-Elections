@@ -30,6 +30,10 @@ library(rtweet)
 library(stringr)
 library(ggplot2)
 
+# A Twitter API key is required for both the scraping of the data and running the Botometer API. See https://developer.twitter.com/ for info on how to apply for one
+
+# A  Mashape (now RapidAPI) key is required to access the Botometer API. See https://rapidapi.com/ for signup
+# The OSoMe Botometer (https://botometer.iuni.iu.edu/) API was accessed on Mashape/RapidAPI. See https://rapidapi.com/OSoMe/api/botometer-pro for more info
 
 TwitterTor_accesstoken <-  "----"
 TwitterTor_accesssecret <-  "----"
